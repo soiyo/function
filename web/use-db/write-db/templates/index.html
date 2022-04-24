@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+        ></script>
+
+        <title>방명록 만들기</title>
+
+        <style>
+            .list {
+                width: 500px;
+                margin: 60px auto 0px auto;
+                padding-bottom: 60px;
+            }
+
+            .mybtn {
+                width: 100%;
+            }
+
+            .list > table {
+                margin: 20px 0;
+                font-size: 18px;
+            }
+        </style>
+        <script>
+            $(document).ready(function () {
+                show();
+            });
+            function show() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/profile',
+                    data: {},
+                    success: function (response) {
+                        let rows = response['intro'];
+                        for (let i = 0; i < rows.length; i++) {
+                            let name = rows[i]['name'];
+                            let hi = rows[i]['hi'];
+
+                            let temp_html = ` <tr>
+                                <td>${name}</td>
+                                <td>${hi}</td> 
+                            </tr>`;
+                            $('#box').append(temp_html);
+                        }
+                    },
+                });
+            }
+            function save() {
+                let name = $('#name').val();
+                let hi = $('#hi').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/profile',
+                    data: { name_give: name, hi_give: hi }, //데이터 전송 (app.py로)
+                    success: function (response) {
+                        alert(response['msg']); //메세지 띄우기
+                        window.location.reload(); //다 가져오면 새로고침
+                    },
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div class=""></div>
+        <div class="list">
+            <h3>방명록을 남겨보세요!</h3>
+            <p>
+                여기에 작성하세요!<br />
+                ex) 저는 고양이를 키우고 있습니다. 이름은 야옹이에요!
+            </p>
+            <div class="order-info">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">닉네임</span>
+                    <input id="name" type="text" class="form-control" />
+                    <span class="input-group-text">댓글</span>
+                    <input id="hi" type="text" class="form-control" />
+                </div>
+
+                <button onclick="save()" type="button" class="btn btn-warning mybtn">방명록 남기기</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">닉네임</th>
+                        <th scope="col">댓글</th>
+                    </tr>
+                </thead>
+                <tbody id="box"></tbody>
+            </table>
+        </div>
+    </body>
+</html>
